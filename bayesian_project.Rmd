@@ -1,0 +1,214 @@
+---
+title: "Bayesian Modeling & Prediction"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(statsr)
+library(BAS)
+library(reshape2)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `movies`. Delete this note when before you submit 
+your work. 
+
+```{r load-data}
+load("movies.Rdata")
+```
+
+
+
+* * *
+
+## Part 1: Data
+
+The dataset contains information about movies in Rotten Tomatoes and IMDB. Both are considered review-aggregation websites for films. 
+On IMDb, all films are given an overall rating out of ten. In a roundabout way, these ratings are derived from votes submitted by IMDb users, not movie critics.
+Rotten Tomatoes gives films a score out of 100 based on the averaged reviews of professional film critics.
+
+### Metodology and Sampling
+There are 651 randomly sampled movies produced and released before 2016. There are 32 available variables.  Note that the sample size is very small, compared with the population of movie watchers as a whole, which also does not allow us to draw conclusions. This is an observational study therefore we cannot establish causality.
+
+##### Some Possible Sources of Bias
+- The data is collected from movie fans, therefore may not represent the average movie goer. It is possibe these can be sources of **sampling bias**.
+- The study sampling is random, however, so the results are generalizable to movies produced and released before 2016 in the US. However, it will not be generalizable to all movies released in **all parts of the world**.
+
+
+* * *
+
+## Part 2: Data manipulation
+
+1) Create new variable based on title_type: New variable should be called feature_film with levels yes (movies that are feature films) and no
+
+2) Create new variable based on genre: New variable should be called drama with levels yes (movies that are dramas) and no
+
+3) Create new variable based on mpaa_rating: New variable should be called mpaa_rating_R with levels yes (movies that are R rated) and no
+
+4) Create two new variables based on thtr_rel_month: 
+  * New variable called oscar_season with levels yes (if movie is released in November, October, or December) and no 
+  * New variable called summer_season with levels yes (if movie is released in May, June, July, or August) and no 
+
+
+```{r}
+movies <- movies %>%
+        mutate(feature_film = ifelse(title_type == "Feature Film","yes","no"),
+               drama = ifelse(genre == "Drama", "yes","no"),
+               mpaa_rating_R = ifelse(mpaa_rating == "R","yes","no"),
+               oscar_season = ifelse(thtr_rel_month %in% c(10,11, 12),"yes","no"),
+               summer_season = ifelse(thtr_rel_month %in% c(5, 6, 7, 8),"yes","no"))
+```
+
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+First we need to create a new dataframe using only the new variables that we created in the exercise above. Next, we will "melt" this dataframe in a way that is most easily readable by the summary and plot functions.
+
+```{r}
+newVars <- select(movies, audience_score, feature_film, drama, mpaa_rating_R, oscar_season, summer_season)
+dfmelt <- melt(newVars, id.vars=1)
+
+dfmelt %>%
+        group_by(variable,value) %>%
+        summarize(avg_rating = mean(audience_score), 
+                  min_rating = min(audience_score), 
+                  max_rating = max(audience_score))
+
+```
+
+The most interesting variable appears to be feature_film. The average for non-feature films is 81.05, while the average for feature films is 60.46. We’ll see if this ends up being an important factor in the model.
+
+
+```{r}
+ggplot(dfmelt, aes(x=value, y=audience_score,fill=variable))+
+  geom_boxplot(alpha=0.4)+
+  facet_grid(.~variable)+
+  scale_fill_brewer(palette="Dark2")+
+  labs(x="New Variables",y="Audience Score")
+```
+
+By looking at the boxplot, we can see that except for feature film, other variables have little effect on the audience_score. Maybe that could be explained by the fact that documentaries tend to attract very especific types of movie-goers. This audience tend to appreciate the informative aspect of the genre.
+
+One more interesting statistic is that the genre drama’s median score seems to be higher than other genres.
+
+
+* * *
+
+## Part 4: Modeling
+
+First we will start using the full model with the selected variables for the exercise: feature_film, drama, runtime, mpaa_rating_R, thtr_rel_year, oscar_season, summer_season, imdb_rating, imdb_num_votes, critics_score, best_pic_nom, best_pic_win, best_actor_win, best_actress_win, best_dir_win, top200_box.
+
+
+```{r}
+set.seed(1234)
+
+df<-movies %>%
+  select(feature_film,drama,runtime,mpaa_rating_R,
+                     thtr_rel_year,oscar_season,summer_season,imdb_rating,
+                     imdb_num_votes,critics_score,best_pic_nom,
+                     best_pic_win,best_actor_win,best_actress_win,
+                     best_dir_win,top200_box,audience_score)
+```
+
+Often, several models are equally plausible and choosing only one ignores the 
+inherent uncertainty involved in choosing the variables to include in the model. A way to get around this problem is to implement Bayesian model averaging (BMA), in which multiple models are averaged to obtain posteriors of coefficients and 
+predictions from new data.
+
+
+```{r}
+model1 <- bas.lm(audience_score ~ ., data=df,
+               prior="BIC",
+               modelprior = uniform())
+
+summary(model1)
+
+image(model1,rotate=FALSE)
+```
+
+As we can see in the summary the most effcient model, which has posterior probability of 0.1297, includes only Intecept, runtime, imdb_rating, and critics_score. Therefore we will try a new model using only these variables.
+
+```{r}
+df2 <- movies %>%
+  select(runtime,imdb_rating,critics_score, audience_score)
+
+model2 <- bas.lm(audience_score ~ ., data=df2,
+               prior="BIC",
+               modelprior = uniform())
+
+model2
+```
+
+We want to verify our final model using the plot function to generate different visualizations. 
+
+
+```{r}
+plot(model2)
+```
+
+
+```{r}
+confint(coefficients(model2))
+```
+
+Based on the credicle interval above we can draw the following model to predict the audience score:
+
+$$Audience Score = 62.347 - 0.0276*runtime + 14.963*imdbRating + 0.0649*criticsScore$$
+
+
+
+* * *
+
+## Part 5: Prediction
+
+Now we will use our model to predict the audience_score of the movie The Arrival (2016). 
+
+First  let us find the predictive values under the Bayesian Model Averaging. Then we will use the *Best Predictive Model* (`BPM`), the one which has predictions closest to BMA and corresponding posterior standard deviations. And finally the *Median Probability Model* (`MPM`) .
+
+
+```{r}
+#arrival data
+arrival <- data.frame(runtime=116, imdb_rating = 7.9, critics_score = 84)
+
+predict1 <- predict(model2,arrival,estimator="BMA", se.fit=TRUE)
+predict2 <- predict(model2,arrival,estimator="BPM", se.fit=TRUE)
+predict3 <- predict(model2,arrival,estimator="MPM", se.fit=TRUE)
+
+ci_bma_movies = confint(predict1, estimator="BMA")
+ci_bma_movies
+
+ci_bpm_movies = confint(predict2, estimator="BPM")
+ci_bpm_movies
+
+ci_mpm_movies = confint(predict3, estimator="MPM")
+ci_mpm_movies
+
+```
+
+Our model predict the audience score of roughly 84, which is pretty good compared to the real audience score of 82.
+
+https://www.rottentomatoes.com/m/arrival_2016/
+
+
+
+* * *
+
+## Part 6: Conclusion
+
+Based on the given data, the optimal model we could find contain the following variables: critics score, runtime and imdb_rating. These variables will have the most effects on audience score of a movies on average. We choose our final model based on the highest posterior probability.
+
+The model performs well when using the limited variables required by the assignment. More testing is needed before determining whether this model is a good fit overall, or just performed well with the single prediction, as the assignment stipulates.
+
+One shortcoming of this analysis is the lack of prior model. It will greatly enhance the study if we use a better prior model for our regression. 
