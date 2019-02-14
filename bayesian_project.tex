@@ -1,0 +1,579 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Bayesian Modeling \& Prediction},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Bayesian Modeling \& Prediction}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{}
+    \preauthor{}\postauthor{}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\subsection{Setup}\label{setup}
+
+\subsubsection{Load packages}\label{load-packages}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(statsr)}
+\KeywordTok{library}\NormalTok{(BAS)}
+\KeywordTok{library}\NormalTok{(reshape2)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Load data}\label{load-data}
+
+Make sure your data and R Markdown files are in the same directory. When
+loaded your data file will be called \texttt{movies}. Delete this note
+when before you submit your work.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{load}\NormalTok{(}\StringTok{"movies.Rdata"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\subsection{Part 1: Data}\label{part-1-data}
+
+The dataset contains information about movies in Rotten Tomatoes and
+IMDB. Both are considered review-aggregation websites for films. On
+IMDb, all films are given an overall rating out of ten. In a roundabout
+way, these ratings are derived from votes submitted by IMDb users, not
+movie critics. Rotten Tomatoes gives films a score out of 100 based on
+the averaged reviews of professional film critics.
+
+\subsubsection{Metodology and Sampling}\label{metodology-and-sampling}
+
+There are 651 randomly sampled movies produced and released before 2016.
+There are 32 available variables. Note that the sample size is very
+small, compared with the population of movie watchers as a whole, which
+also does not allow us to draw conclusions. This is an observational
+study therefore we cannot establish causality.
+
+\subparagraph{Some Possible Sources of
+Bias}\label{some-possible-sources-of-bias}
+
+\begin{itemize}
+\tightlist
+\item
+  The data is collected from movie fans, therefore may not represent the
+  average movie goer. It is possibe these can be sources of
+  \textbf{sampling bias}.
+\item
+  The study sampling is random, however, so the results are
+  generalizable to movies produced and released before 2016 in the US.
+  However, it will not be generalizable to all movies released in
+  \textbf{all parts of the world}.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\subsection{Part 2: Data manipulation}\label{part-2-data-manipulation}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  Create new variable based on title\_type: New variable should be
+  called feature\_film with levels yes (movies that are feature films)
+  and no
+\item
+  Create new variable based on genre: New variable should be called
+  drama with levels yes (movies that are dramas) and no
+\item
+  Create new variable based on mpaa\_rating: New variable should be
+  called mpaa\_rating\_R with levels yes (movies that are R rated) and
+  no
+\item
+  Create two new variables based on thtr\_rel\_month:
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  New variable called oscar\_season with levels yes (if movie is
+  released in November, October, or December) and no
+\item
+  New variable called summer\_season with levels yes (if movie is
+  released in May, June, July, or August) and no
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{movies <-}\StringTok{ }\NormalTok{movies }\OperatorTok{%>%}
+\StringTok{        }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{feature_film =} \KeywordTok{ifelse}\NormalTok{(title_type }\OperatorTok{==}\StringTok{ "Feature Film"}\NormalTok{,}\StringTok{"yes"}\NormalTok{,}\StringTok{"no"}\NormalTok{),}
+               \DataTypeTok{drama =} \KeywordTok{ifelse}\NormalTok{(genre }\OperatorTok{==}\StringTok{ "Drama"}\NormalTok{, }\StringTok{"yes"}\NormalTok{,}\StringTok{"no"}\NormalTok{),}
+               \DataTypeTok{mpaa_rating_R =} \KeywordTok{ifelse}\NormalTok{(mpaa_rating }\OperatorTok{==}\StringTok{ "R"}\NormalTok{,}\StringTok{"yes"}\NormalTok{,}\StringTok{"no"}\NormalTok{),}
+               \DataTypeTok{oscar_season =} \KeywordTok{ifelse}\NormalTok{(thtr_rel_month }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{10}\NormalTok{,}\DecValTok{11}\NormalTok{, }\DecValTok{12}\NormalTok{),}\StringTok{"yes"}\NormalTok{,}\StringTok{"no"}\NormalTok{),}
+               \DataTypeTok{summer_season =} \KeywordTok{ifelse}\NormalTok{(thtr_rel_month }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{),}\StringTok{"yes"}\NormalTok{,}\StringTok{"no"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\subsection{Part 3: Exploratory data
+analysis}\label{part-3-exploratory-data-analysis}
+
+First we need to create a new dataframe using only the new variables
+that we created in the exercise above. Next, we will ``melt'' this
+dataframe in a way that is most easily readable by the summary and plot
+functions.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{newVars <-}\StringTok{ }\KeywordTok{select}\NormalTok{(movies, audience_score, feature_film, drama, mpaa_rating_R, oscar_season, summer_season)}
+\NormalTok{dfmelt <-}\StringTok{ }\KeywordTok{melt}\NormalTok{(newVars, }\DataTypeTok{id.vars=}\DecValTok{1}\NormalTok{)}
+
+\NormalTok{dfmelt }\OperatorTok{%>%}
+\StringTok{        }\KeywordTok{group_by}\NormalTok{(variable,value) }\OperatorTok{%>%}
+\StringTok{        }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{avg_rating =} \KeywordTok{mean}\NormalTok{(audience_score), }
+                  \DataTypeTok{min_rating =} \KeywordTok{min}\NormalTok{(audience_score), }
+                  \DataTypeTok{max_rating =} \KeywordTok{max}\NormalTok{(audience_score))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 10 x 5
+## # Groups:   variable [?]
+##    variable      value avg_rating min_rating max_rating
+##    <fct>         <chr>      <dbl>      <dbl>      <dbl>
+##  1 feature_film  no          81.0         19         96
+##  2 feature_film  yes         60.5         11         97
+##  3 drama         no          59.7         11         97
+##  4 drama         yes         65.3         13         95
+##  5 mpaa_rating_R no          62.7         11         96
+##  6 mpaa_rating_R yes         62.0         14         97
+##  7 oscar_season  no          61.8         11         96
+##  8 oscar_season  yes         63.7         13         97
+##  9 summer_season no          62.6         13         97
+## 10 summer_season yes         61.8         11         94
+\end{verbatim}
+
+The most interesting variable appears to be feature\_film. The average
+for non-feature films is 81.05, while the average for feature films is
+60.46. We'll see if this ends up being an important factor in the model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(dfmelt, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{value, }\DataTypeTok{y=}\NormalTok{audience_score,}\DataTypeTok{fill=}\NormalTok{variable))}\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{(}\DataTypeTok{alpha=}\FloatTok{0.4}\NormalTok{)}\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_grid}\NormalTok{(.}\OperatorTok{~}\NormalTok{variable)}\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette=}\StringTok{"Dark2"}\NormalTok{)}\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\StringTok{"New Variables"}\NormalTok{,}\DataTypeTok{y=}\StringTok{"Audience Score"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{bayesian_project_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+By looking at the boxplot, we can see that except for feature film,
+other variables have little effect on the audience\_score. Maybe that
+could be explained by the fact that documentaries tend to attract very
+especific types of movie-goers. This audience tend to appreciate the
+informative aspect of the genre.
+
+One more interesting statistic is that the genre drama's median score
+seems to be higher than other genres.
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\subsection{Part 4: Modeling}\label{part-4-modeling}
+
+First we will start using the full model with the selected variables for
+the exercise: feature\_film, drama, runtime, mpaa\_rating\_R,
+thtr\_rel\_year, oscar\_season, summer\_season, imdb\_rating,
+imdb\_num\_votes, critics\_score, best\_pic\_nom, best\_pic\_win,
+best\_actor\_win, best\_actress\_win, best\_dir\_win, top200\_box.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+
+\NormalTok{df<-movies }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(feature_film,drama,runtime,mpaa_rating_R,}
+\NormalTok{                     thtr_rel_year,oscar_season,summer_season,imdb_rating,}
+\NormalTok{                     imdb_num_votes,critics_score,best_pic_nom,}
+\NormalTok{                     best_pic_win,best_actor_win,best_actress_win,}
+\NormalTok{                     best_dir_win,top200_box,audience_score)}
+\end{Highlighting}
+\end{Shaded}
+
+Often, several models are equally plausible and choosing only one
+ignores the inherent uncertainty involved in choosing the variables to
+include in the model. A way to get around this problem is to implement
+Bayesian model averaging (BMA), in which multiple models are averaged to
+obtain posteriors of coefficients and predictions from new data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model1 <-}\StringTok{ }\KeywordTok{bas.lm}\NormalTok{(audience_score }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{df,}
+               \DataTypeTok{prior=}\StringTok{"BIC"}\NormalTok{,}
+               \DataTypeTok{modelprior =} \KeywordTok{uniform}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in bas.lm(audience_score ~ ., data = df, prior = "BIC", modelprior
+## = uniform()): dropping 1 rows due to missing data
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(model1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                     P(B != 0 | Y)    model 1       model 2       model 3
+## Intercept              1.00000000     1.0000     1.0000000     1.0000000
+## feature_filmyes        0.06536947     0.0000     0.0000000     0.0000000
+## dramayes               0.04319833     0.0000     0.0000000     0.0000000
+## runtime                0.46971477     1.0000     0.0000000     0.0000000
+## mpaa_rating_Ryes       0.19984016     0.0000     0.0000000     0.0000000
+## thtr_rel_year          0.09068970     0.0000     0.0000000     0.0000000
+## oscar_seasonyes        0.07505684     0.0000     0.0000000     0.0000000
+## summer_seasonyes       0.08042023     0.0000     0.0000000     0.0000000
+## imdb_rating            1.00000000     1.0000     1.0000000     1.0000000
+## imdb_num_votes         0.05773502     0.0000     0.0000000     0.0000000
+## critics_score          0.88855056     1.0000     1.0000000     1.0000000
+## best_pic_nomyes        0.13119140     0.0000     0.0000000     0.0000000
+## best_pic_winyes        0.03984766     0.0000     0.0000000     0.0000000
+## best_actor_winyes      0.14434896     0.0000     0.0000000     1.0000000
+## best_actress_winyes    0.14128087     0.0000     0.0000000     0.0000000
+## best_dir_winyes        0.06693898     0.0000     0.0000000     0.0000000
+## top200_boxyes          0.04762234     0.0000     0.0000000     0.0000000
+## BF                             NA     1.0000     0.9968489     0.2543185
+## PostProbs                      NA     0.1297     0.1293000     0.0330000
+## R2                             NA     0.7549     0.7525000     0.7539000
+## dim                            NA     4.0000     3.0000000     4.0000000
+## logmarg                        NA -3615.2791 -3615.2822108 -3616.6482224
+##                           model 4       model 5
+## Intercept               1.0000000     1.0000000
+## feature_filmyes         0.0000000     0.0000000
+## dramayes                0.0000000     0.0000000
+## runtime                 0.0000000     1.0000000
+## mpaa_rating_Ryes        1.0000000     1.0000000
+## thtr_rel_year           0.0000000     0.0000000
+## oscar_seasonyes         0.0000000     0.0000000
+## summer_seasonyes        0.0000000     0.0000000
+## imdb_rating             1.0000000     1.0000000
+## imdb_num_votes          0.0000000     0.0000000
+## critics_score           1.0000000     1.0000000
+## best_pic_nomyes         0.0000000     0.0000000
+## best_pic_winyes         0.0000000     0.0000000
+## best_actor_winyes       0.0000000     0.0000000
+## best_actress_winyes     0.0000000     0.0000000
+## best_dir_winyes         0.0000000     0.0000000
+## top200_boxyes           0.0000000     0.0000000
+## BF                      0.2521327     0.2391994
+## PostProbs               0.0327000     0.0310000
+## R2                      0.7539000     0.7563000
+## dim                     4.0000000     5.0000000
+## logmarg             -3616.6568544 -3616.7095127
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{image}\NormalTok{(model1,}\DataTypeTok{rotate=}\OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{bayesian_project_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+As we can see in the summary the most effcient model, which has
+posterior probability of 0.1297, includes only Intecept, runtime,
+imdb\_rating, and critics\_score. Therefore we will try a new model
+using only these variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df2 <-}\StringTok{ }\NormalTok{movies }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(runtime,imdb_rating,critics_score, audience_score)}
+
+\NormalTok{model2 <-}\StringTok{ }\KeywordTok{bas.lm}\NormalTok{(audience_score }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data=}\NormalTok{df2,}
+               \DataTypeTok{prior=}\StringTok{"BIC"}\NormalTok{,}
+               \DataTypeTok{modelprior =} \KeywordTok{uniform}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in bas.lm(audience_score ~ ., data = df2, prior = "BIC", modelprior
+## = uniform()): dropping 1 rows due to missing data
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## bas.lm(formula = audience_score ~ ., data = df2, prior = "BIC", 
+##     modelprior = uniform())
+## 
+## 
+##  Marginal Posterior Inclusion Probabilities: 
+##     Intercept        runtime    imdb_rating  critics_score  
+##        1.0000         0.5102         1.0000         0.9051
+\end{verbatim}
+
+We want to verify our final model using the plot function to generate
+different visualizations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(model2)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{bayesian_project_files/figure-latex/unnamed-chunk-7-1.pdf}
+\includegraphics{bayesian_project_files/figure-latex/unnamed-chunk-7-2.pdf}
+\includegraphics{bayesian_project_files/figure-latex/unnamed-chunk-7-3.pdf}
+\includegraphics{bayesian_project_files/figure-latex/unnamed-chunk-7-4.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{confint}\NormalTok{(}\KeywordTok{coefficients}\NormalTok{(model2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                      2.5%      97.5%        beta
+## Intercept     61.59918898 63.1369749 62.34769231
+## runtime       -0.08195701  0.0000000 -0.02755783
+## imdb_rating   13.62963998 16.4862308 14.96315740
+## critics_score  0.00000000  0.1061856  0.06498060
+## attr(,"Probability")
+## [1] 0.95
+## attr(,"class")
+## [1] "confint.bas"
+\end{verbatim}
+
+Based on the credicle interval above we can draw the following model to
+predict the audience score:
+
+\[Audience Score = 62.347 - 0.0276*runtime + 14.963*imdbRating + 0.0649*criticsScore\]
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\subsection{Part 5: Prediction}\label{part-5-prediction}
+
+Now we will use our model to predict the audience\_score of the movie
+The Arrival (2016).
+
+First let us find the predictive values under the Bayesian Model
+Averaging. Then we will use the \emph{Best Predictive Model}
+(\texttt{BPM}), the one which has predictions closest to BMA and
+corresponding posterior standard deviations. And finally the
+\emph{Median Probability Model} (\texttt{MPM}) .
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#arrival data}
+\NormalTok{arrival <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{runtime=}\DecValTok{116}\NormalTok{, }\DataTypeTok{imdb_rating =} \FloatTok{7.9}\NormalTok{, }\DataTypeTok{critics_score =} \DecValTok{84}\NormalTok{)}
+
+\NormalTok{predict1 <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model2,arrival,}\DataTypeTok{estimator=}\StringTok{"BMA"}\NormalTok{, }\DataTypeTok{se.fit=}\OtherTok{TRUE}\NormalTok{)}
+\NormalTok{predict2 <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model2,arrival,}\DataTypeTok{estimator=}\StringTok{"BPM"}\NormalTok{, }\DataTypeTok{se.fit=}\OtherTok{TRUE}\NormalTok{)}
+\NormalTok{predict3 <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model2,arrival,}\DataTypeTok{estimator=}\StringTok{"MPM"}\NormalTok{, }\DataTypeTok{se.fit=}\OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in bas.lm(eval(object$call$formula), data =
+## eval(object$call$data, : dropping 1 rows due to missing data
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ci_bma_movies =}\StringTok{ }\KeywordTok{confint}\NormalTok{(predict1, }\DataTypeTok{estimator=}\StringTok{"BMA"}\NormalTok{)}
+\NormalTok{ci_bma_movies}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          2.5%    97.5%     pred
+## [1,] 64.70999 104.1935 84.85422
+## attr(,"Probability")
+## [1] 0.95
+## attr(,"class")
+## [1] "confint.bas"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ci_bpm_movies =}\StringTok{ }\KeywordTok{confint}\NormalTok{(predict2, }\DataTypeTok{estimator=}\StringTok{"BPM"}\NormalTok{)}
+\NormalTok{ci_bpm_movies}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         2.5%    97.5%     pred
+## [1,] 64.9701 104.7784 84.87423
+## attr(,"Probability")
+## [1] 0.95
+## attr(,"class")
+## [1] "confint.bas"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ci_mpm_movies =}\StringTok{ }\KeywordTok{confint}\NormalTok{(predict3, }\DataTypeTok{estimator=}\StringTok{"MPM"}\NormalTok{)}
+\NormalTok{ci_mpm_movies}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          2.5%    97.5%     pred
+## [1,] 64.99805 104.5128 84.75543
+## attr(,"Probability")
+## [1] 0.95
+## attr(,"class")
+## [1] "confint.bas"
+\end{verbatim}
+
+Our model predict the audience score of roughly 84, which is pretty good
+compared to the real audience score of 82.
+
+\url{https://www.rottentomatoes.com/m/arrival_2016/}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\subsection{Part 6: Conclusion}\label{part-6-conclusion}
+
+Based on the given data, the optimal model we could find contain the
+following variables: critics score, runtime and imdb\_rating. These
+variables will have the most effects on audience score of a movies on
+average. We choose our final model based on the highest posterior
+probability.
+
+The model performs well when using the limited variables required by the
+assignment. More testing is needed before determining whether this model
+is a good fit overall, or just performed well with the single
+prediction, as the assignment stipulates.
+
+One shortcoming of this analysis is the lack of prior model. It will
+greatly enhance the study if we use a better prior model for our
+regression.
+
+
+\end{document}
